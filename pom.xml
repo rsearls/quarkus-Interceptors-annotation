@@ -1,0 +1,603 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jboss.resteasy</groupId>
+  <artifactId>quarkus-Interceptors-annotation</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <properties>
+    <compiler-plugin.version>3.8.1</compiler-plugin.version>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <quarkus-plugin.version>1.2.0.Final</quarkus-plugin.version>
+    <!-- replace ref to quarkus-universe-bom to be quarkus-bom -->
+    <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
+    <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+    <!--
+    <quarkus.platform.version>1.2.0.Final</quarkus.platform.version>
+    <quarkus.platform.version>1.3.0.Alpha1</quarkus.platform.version>
+  -->
+     <quarkus.platform.version>999-SNAPSHOT</quarkus.platform.version>
+
+    <surefire-plugin.version>2.22.1</surefire-plugin.version>
+
+    <!-- ############# properties added to orig ############## -->
+    <resteasy-version>4.5.0-SNAPSHOT</resteasy-version>
+    <dep.arquillian-bom.version>1.4.1.Final</dep.arquillian-bom.version>
+    <javax.servlet-api-version>3.1.0</javax.servlet-api-version>
+    <jboss-servlet-api_4.0_spec-version>2.0.0.Final</jboss-servlet-api_4.0_spec-version>
+    <!-- This version causes error
+        java.util.ServiceConfigurationError: org.apache.logging.log4j.spi.Provider
+        : org.apache.logging.log4j.core.impl.Log4jProvider not a subtype
+        Version upgrade fixed issue
+    <version.log4j>2.9.1</version.log4j>
+    -->
+    <version.log4j>2.10.0</version.log4j>
+    <version.io.undertow>2.0.23.Final</version.io.undertow>
+    <version.eclipse.jdt>3.5.0</version.eclipse.jdt>
+    <version.testng>6.9.9</version.testng>
+    <version.org.jboss.resteasy.tracing.api>1.0.0.Beta4</version.org.jboss.resteasy.tracing.api>
+    <version.com.fasterxml.jackson>2.10.1</version.com.fasterxml.jackson>
+    <version.org.wildfly.extras.creaper>1.6.1</version.org.wildfly.extras.creaper>
+    <version.jboss.dmr>1.5.0.Final</version.jboss.dmr>
+    <version.wildfly.controller.client>7.0.0.Final</version.wildfly.controller.client>
+
+    <!--
+    <version.jboss.threads>2.3.2.Final</version.jboss.threads>
+    <version.jboss.threads>2.3.3.Final</version.jboss.threads>
+    -->
+    <version.jboss.threads>3.0.1.Final</version.jboss.threads>
+
+    <version.wildfly.arquillian.common>2.2.0.Final</version.wildfly.arquillian.common>
+    <version.jboss.ejb.spec>2.0.0.Final</version.jboss.ejb.spec>
+    <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
+    <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>2.0.0.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
+    <version.jakarta.validation-api>2.0.2</version.jakarta.validation-api>
+    <version.org.glassfish.jakarta.el>3.0.2</version.org.glassfish.jakarta.el>
+    <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
+    <version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>2.0.0.Final</version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-bom</artifactId>
+        <version>${quarkus.platform.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- ######## additions to orig ############### -->
+      <dependency>
+        <groupId>org.jboss.arquillian</groupId>
+        <artifactId>arquillian-bom</artifactId>
+        <version>${dep.arquillian-bom.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+
+    <!-- todo 14 -->
+    <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.1-api</artifactId>
+      <version>${version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.spec.javax.jms</groupId>
+      <artifactId>jboss-jms-api_2.0_spec</artifactId>
+      <version>${version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec}</version>
+    </dependency>
+
+    <!-- todo 13 -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-cache-core</artifactId>
+      <version>${resteasy-version}</version>
+    </dependency>
+    <!-- todo 12 -->
+    <dependency>
+      <groupId>org.wildfly.arquillian</groupId>
+      <artifactId>wildfly-arquillian-common</artifactId>
+      <version>${version.wildfly.arquillian.common}</version>
+      <exclusions>
+        <!-- force not using io.undertow:undertow-core:jar:2.0.19.Final
+              allow io.quarkus.http:quarkus-http-core:jar:3.0.2.Final
+              to be used instead
+        -->
+        <exclusion>
+          <groupId>io.undertow</groupId>
+          <artifactId>undertow-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-multipart-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-atom-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson2-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-html</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-crypto</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.spec.javax.ejb</groupId>
+      <artifactId>jboss-ejb-api_3.2_spec</artifactId>
+      <version>${version.jboss.ejb.spec}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-stats</artifactId>
+      <version>${resteasy-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-validator-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.9.5</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-core</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.aether</groupId>
+      <artifactId>aether-transport-file</artifactId>
+      <version>${version.org.eclipse.aether}</version>
+      <!-- resolves error
+         java.lang.NoSuchMethodError: org.eclipse.aether.transfer.TransferResource
+        .<init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;
+        Lorg/eclipse/aether/RequestTrace;)V
+       -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.aether</groupId>
+          <artifactId>aether-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.aether</groupId>
+      <artifactId>aether-transport-http</artifactId>
+      <version>${version.org.eclipse.aether}</version>
+      <!-- resolves error
+         java.lang.NoSuchMethodError: org.eclipse.aether.transfer.TransferResource
+        .<init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/io/File;
+        Lorg/eclipse/aether/RequestTrace;)V
+       -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.aether</groupId>
+          <artifactId>aether-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Does NOT work
+    <dependency>
+      <groupId>org.eclipse.aether</groupId>
+      <artifactId>aether-api</artifactId>
+      <version>${version.org.eclipse.aether}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.resolver</groupId>
+      <artifactId>maven-resolver-api</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+       -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-core-spi</artifactId>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>org.jboss.spec.javax.el</groupId>
+      <artifactId>jboss-el-api_3.0_spec</artifactId>
+      <version>${version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec}</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+      <version>${version.jakarta.validation-api}</version>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>jakarta.el</artifactId>
+      <version>${version.org.glassfish.jakarta.el}</version>
+    </dependency>
+
+    <!-- todo 11 -->
+    <dependency>
+      <groupId>org.wildfly.core</groupId>
+      <artifactId>wildfly-controller-client</artifactId>
+      <version>${version.wildfly.controller.client}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.wildfly.core</groupId>
+      <artifactId>wildfly-cli</artifactId>
+      <version>${version.wildfly.controller.client}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.threads</groupId>
+      <artifactId>jboss-threads</artifactId>
+      <version>${version.jboss.threads}</version>
+    </dependency>
+
+
+    <!-- todo 10 -->
+    <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-dmr</artifactId>
+      <version>${version.jboss.dmr}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.wildfly.extras.creaper</groupId>
+      <artifactId>creaper-core</artifactId>
+      <version>${version.org.wildfly.extras.creaper}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpasyncclient</artifactId>
+    </dependency>
+    <!-- todo 9 -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client-microprofile</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.microprofile.rest.client</groupId>
+      <artifactId>microprofile-rest-client-api</artifactId>
+    </dependency>
+    <!-- todo 8 -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-tracing-api</artifactId>
+      <version>${version.org.jboss.resteasy.tracing.api}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${version.com.fasterxml.jackson}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-wadl</artifactId>
+      <version>${resteasy-version}</version> <!-- in the bom ${resteasy.version} -->
+    </dependency>
+    <!-- todo 7 -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-rxjava2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.reactivex.rxjava2</groupId>
+      <artifactId>rxjava</artifactId>
+    </dependency>
+
+    <!-- todo 6 required by  org/jboss/resteasy/test/asynch/AsynchBasicTest -->
+    <dependency>
+      <groupId>com.io7m.xom</groupId>
+      <artifactId>xom</artifactId>
+      <version>1.2.10</version>
+    </dependency>
+    <!-- todo 5  -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-undertow</artifactId>
+      <!-- <version>1.2.0.Final</version> -->
+    </dependency>
+
+<!-- todo 4
+    <dependency>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>org.eclipse.jdt.junit.runtime</artifactId>
+      <version>${version.eclipse.jdt}</version>
+    </dependency>
+ -->
+    <!-- required for annotation org/testng/annotations/BeforeClass in arquillian -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>${version.testng}</version>
+    </dependency>
+
+<!-- todo 3
+    <dependency>
+      <groupId>org.jboss.shrinkwrap</groupId>
+      <artifactId>shrinkwrap-impl-base</artifactId>
+    </dependency>
+ -->
+<!-- required for individual tests to be run -->
+    <dependency>
+      <groupId>org.jboss.arquillian.testng</groupId>
+      <artifactId>arquillian-testng-container</artifactId>
+      <version>${dep.arquillian-bom.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.arquillian.test</groupId>
+      <artifactId>arquillian-test-impl-base</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.core</groupId>
+      <artifactId>arquillian-core-impl-base</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.junit</groupId>
+      <artifactId>arquillian-junit-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${version.log4j}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${version.log4j}</version>
+    </dependency>
+    <!-- resolves java.lang.ClassNotFoundException:
+      org.glassfish.jersey.client.JerseyClientBuilder
+    -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
+    </dependency>
+    <!-- resolves java.lang.NoSuchMethodError:
+      org.jboss.resteasy.core.ResteasyContext.addCloseableContextDataLevel()L
+      org/jboss/resteasy/core/ResteasyContext$CloseableContext;
+    -->
+    <!-- todo 2
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-core</artifactId>
+      </dependency>
+-->
+<!-- todo  required for tests in asynch dir-->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxb-provider</artifactId>
+    </dependency>
+
+    <!-- added for test AsynchContextualDataTest -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-json-binding-provider</artifactId>
+    </dependency>
+
+    <!-- https://github.com/quarkusio/quarkus/issues/2701
+        recommended using this
+    NOTE: only needed when using eclipse ide
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+-->
+    <!-- Quarkus - Arquillian Adapter -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-arquillian</artifactId>
+      <version>${quarkus.platform.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy</artifactId>
+    </dependency>
+    <!-- has QuarkusTest annotation  ... not using
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+-->
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- replaces quarkus-junit5 -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>utils-arquillian-utils</artifactId>
+      <version>${resteasy-version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <!-- MUST be excluded -->
+        <exclusion>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>resteasy-client</artifactId>
+        </exclusion>
+        <!-- MUST be excluded -->
+        <exclusion>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>resteasy-validator-provider</artifactId>
+        </exclusion>
+        <!-- remove  wfly arq code .. interferes with qrk-arq  -->
+        <exclusion>
+          <groupId>org.wildfly.arquillian</groupId>
+          <artifactId>wildfly-arquillian-container-managed</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.spec.javax.servlet</groupId>
+      <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+      <version>2.0.0.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+    </dependency>
+
+  </dependencies>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-maven-plugin</artifactId>
+        <version>${quarkus-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${compiler-plugin.version}</version>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire-plugin.version}</version>
+        <configuration>
+          <systemProperties>
+            <quarkus.tester>true</quarkus.tester> <!-- required for PortProviderUtil -->
+            <org.jboss.resteasy.port>8081</org.jboss.resteasy.port>
+            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+          </systemProperties>
+
+          <excludes>
+
+            <!-- ############## cdi  ####################
+              dir: org/jboss/resteasy/test/cdi
+                     38 total test
+                     29 tests ran successfully
+                      9 tests failed
+            ################################################## -->
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/injection/InjectionTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/injection/InjectionJpaEnumTypeTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/injection/ReverseInjectionTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/injection/NonProxyableProviderTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/injection/MDBInjectionTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/injection/LazyInitUriInfoInjectionTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/injection/WeldSubdeploymentTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/modules/WarLibIntoWarClassesTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/modules/WarClassesIntoWarLibTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/modules/EjbjarLibIntoWarLibTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/modules/EarLibIntoEarLibTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/modules/EarLibIntoWarLibTest.java</exclude>
+            <!-- fails todo (Does not handle @EJB annotation)
+            --><exclude>org/jboss/resteasy/test/cdi/basic/SingletonTest.java</exclude>
+
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/basic/EventsTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/basic/EJBTest.java</exclude>
+            <!-- fails todo (Does not handle @EJB annotation)
+            --><exclude>org/jboss/resteasy/test/cdi/basic/EjbExceptionUnwrapTest.java</exclude>
+
+            <!-- fails todo (Does not handle @Resource annotation)
+            --><exclude>org/jboss/resteasy/test/cdi/basic/OutOfBandTest.java</exclude>
+
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/basic/AsynchronousCdiTest.java</exclude>
+            <!-- fails todo (Does not use @RunAsClient)
+            --><exclude>org/jboss/resteasy/test/cdi/basic/ApplicationInjectionTest.java</exclude>
+
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/basic/DecoratorsTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/basic/BeanReaderWriterTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/basic/EJBEventsTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/basic/CDILocatorTest.java</exclude>
+            <!-- fails todo (java.nio.file.NoSuchFileException:
+                /home/rsearls/project/feb5-full-int-tests/target/jbossas-managed/
+                deployments/RESTEASY-1082.war)
+            --><exclude>org/jboss/resteasy/test/cdi/basic/CDIResourceTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/extensions/BeanExtensionTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/extensions/ScopeExtensionTest.java</exclude>
+            <!-- fails todo (Not handling the @Decorator annotation properly)
+            --><exclude>org/jboss/resteasy/test/cdi/generic/ConcreteDecoratorTest.java</exclude>
+
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/ejb/EJBCDIValidationEJBProxyTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/ejb/EJBCDIValidationTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/validation/ValidationWithCDITest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/UtilitiesTest.java</exclude>
+            <!-- fails todo (expected:<200> but was:<500>)
+            <exclude>org/jboss/resteasy/test/cdi/interceptors/InterceptorTest.java</exclude>
+            -->
+            <!-- fails todo (expected:<200> but was:<500>)
+            --><exclude>org/jboss/resteasy/test/cdi/interceptors/TimerInterceptorTest.java</exclude>
+            <!-- fails todo (expected:<[in-test-ou]t> but was:<[tes]t>)
+            --><exclude>org/jboss/resteasy/test/cdi/interceptors/NameBoundCDIProxiesTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/inheritence/AlternativeSelectedInheritanceTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/inheritence/VanillaInheritanceTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/inheritence/AlternativeVanillaInheritanceTest.java</exclude>
+            <!-- --><exclude>org/jboss/resteasy/test/cdi/inheritence/SpecializedInheritanceTest.java</exclude>
+
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>native</id>
+      <activation>
+        <property>
+          <name>native</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${surefire-plugin.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+                <configuration>
+                  <systemProperties>
+                    <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                  </systemProperties>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <quarkus.package.type>native</quarkus.package.type>
+      </properties>
+    </profile>
+  </profiles>
+</project>
